@@ -8,7 +8,57 @@ import "../styles/global.css";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Academia Cultural Inglesa</title>
   </head>
-  <body class="grid min-h-screen place-items-center bg-[#FBFBF9] text-[#1B4321]">
-    <h1 class="text-4xl font-bold">Hola mundo</h1>
+  <body class="relative grid min-h-screen place-items-center overflow-hidden bg-red-600 text-white">
+    <div
+      id="pelota"
+      class="pointer-events-none absolute top-0 left-0 size-16 rounded-full bg-white shadow-lg"
+      aria-hidden="true"
+    >
+    </div>
+
+    <h1 class="relative z-10 text-4xl font-bold">
+      <button id="saludo" type="button" class="cursor-pointer select-none">Hola mundo</button>
+    </h1>
+
+    <script>
+      const pelota = document.getElementById("pelota")!;
+      const saludo = document.getElementById("saludo")!;
+
+      // Click en "Hola mundo": color random
+      saludo.addEventListener("click", () => {
+        saludo.style.color = `hsl(${Math.floor(Math.random() * 360)} 90% 60%)`;
+      });
+
+      // Pelota que rebota contra los bordes de la ventana
+      const velocidad = 250; // px por segundo
+      const angulo = Math.random() * Math.PI * 2;
+      let vx = Math.cos(angulo) * velocidad;
+      let vy = Math.sin(angulo) * velocidad;
+      let x = Math.random() * (window.innerWidth - pelota.offsetWidth);
+      let y = Math.random() * (window.innerHeight - pelota.offsetHeight);
+      let anterior = performance.now();
+
+      function mover(ahora: number) {
+        const dt = Math.min((ahora - anterior) / 1000, 0.05);
+        anterior = ahora;
+
+        const maxX = window.innerWidth - pelota.offsetWidth;
+        const maxY = window.innerHeight - pelota.offsetHeight;
+        x += vx * dt;
+        y += vy * dt;
+
+        if (x <= 0) vx = Math.abs(vx);
+        if (x >= maxX) vx = -Math.abs(vx);
+        if (y <= 0) vy = Math.abs(vy);
+        if (y >= maxY) vy = -Math.abs(vy);
+        x = Math.max(0, Math.min(x, maxX));
+        y = Math.max(0, Math.min(y, maxY));
+
+        pelota.style.transform = `translate(${x}px, ${y}px)`;
+        requestAnimationFrame(mover);
+      }
+
+      requestAnimationFrame(mover);
+    </script>
   </body>
 </html>
